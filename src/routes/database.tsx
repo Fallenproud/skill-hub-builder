@@ -27,8 +27,8 @@ function DatabasePage() {
 
   const loadTable = async (table: string) => {
     setLoading(true);
-    const { data: rows, count: total } = await (supabase
-      .from(table) as any)
+    const { data: rows, count: total } = await (supabase as any)
+      .from(table)
       .select("*", { count: "exact" })
       .limit(100);
     
