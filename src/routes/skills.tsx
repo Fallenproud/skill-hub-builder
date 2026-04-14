@@ -26,25 +26,7 @@ function Badge({ label, color }: { label: string; color: string }) {
   );
 }
 
-interface Skill {
-  id: string;
-  name: string;
-  category_id: string;
-  description: string;
-  trigger_condition: string;
-  boundary: string;
-  priority: number;
-  cost_class: string;
-  latency_class: string;
-  requires_auth: boolean;
-  stateful: boolean;
-  safe_for_parallel: boolean;
-  inputs: string[];
-  outputs: string[];
-  fallback_chain: string[];
-  category_name?: string;
-  category_color?: string;
-}
+type Skill = any;
 
 interface Category {
   id: string;

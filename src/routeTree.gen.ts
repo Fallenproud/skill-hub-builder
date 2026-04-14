@@ -9,8 +9,50 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SkillsRouteImport } from './routes/skills'
+import { Route as SkillEditorRouteImport } from './routes/skill-editor'
+import { Route as PlaygroundRouteImport } from './routes/playground'
+import { Route as ObserveRouteImport } from './routes/observe'
+import { Route as DatabaseRouteImport } from './routes/database'
+import { Route as ConfigRouteImport } from './routes/config'
+import { Route as AgentRouteImport } from './routes/agent'
 import { Route as IndexRouteImport } from './routes/index'
 
+const SkillsRoute = SkillsRouteImport.update({
+  id: '/skills',
+  path: '/skills',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SkillEditorRoute = SkillEditorRouteImport.update({
+  id: '/skill-editor',
+  path: '/skill-editor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlaygroundRoute = PlaygroundRouteImport.update({
+  id: '/playground',
+  path: '/playground',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ObserveRoute = ObserveRouteImport.update({
+  id: '/observe',
+  path: '/observe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DatabaseRoute = DatabaseRouteImport.update({
+  id: '/database',
+  path: '/database',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfigRoute = ConfigRouteImport.update({
+  id: '/config',
+  path: '/config',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgentRoute = AgentRouteImport.update({
+  id: '/agent',
+  path: '/agent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +61,130 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/agent': typeof AgentRoute
+  '/config': typeof ConfigRoute
+  '/database': typeof DatabaseRoute
+  '/observe': typeof ObserveRoute
+  '/playground': typeof PlaygroundRoute
+  '/skill-editor': typeof SkillEditorRoute
+  '/skills': typeof SkillsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/agent': typeof AgentRoute
+  '/config': typeof ConfigRoute
+  '/database': typeof DatabaseRoute
+  '/observe': typeof ObserveRoute
+  '/playground': typeof PlaygroundRoute
+  '/skill-editor': typeof SkillEditorRoute
+  '/skills': typeof SkillsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/agent': typeof AgentRoute
+  '/config': typeof ConfigRoute
+  '/database': typeof DatabaseRoute
+  '/observe': typeof ObserveRoute
+  '/playground': typeof PlaygroundRoute
+  '/skill-editor': typeof SkillEditorRoute
+  '/skills': typeof SkillsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/agent'
+    | '/config'
+    | '/database'
+    | '/observe'
+    | '/playground'
+    | '/skill-editor'
+    | '/skills'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/agent'
+    | '/config'
+    | '/database'
+    | '/observe'
+    | '/playground'
+    | '/skill-editor'
+    | '/skills'
+  id:
+    | '__root__'
+    | '/'
+    | '/agent'
+    | '/config'
+    | '/database'
+    | '/observe'
+    | '/playground'
+    | '/skill-editor'
+    | '/skills'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AgentRoute: typeof AgentRoute
+  ConfigRoute: typeof ConfigRoute
+  DatabaseRoute: typeof DatabaseRoute
+  ObserveRoute: typeof ObserveRoute
+  PlaygroundRoute: typeof PlaygroundRoute
+  SkillEditorRoute: typeof SkillEditorRoute
+  SkillsRoute: typeof SkillsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/skills': {
+      id: '/skills'
+      path: '/skills'
+      fullPath: '/skills'
+      preLoaderRoute: typeof SkillsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/skill-editor': {
+      id: '/skill-editor'
+      path: '/skill-editor'
+      fullPath: '/skill-editor'
+      preLoaderRoute: typeof SkillEditorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/playground': {
+      id: '/playground'
+      path: '/playground'
+      fullPath: '/playground'
+      preLoaderRoute: typeof PlaygroundRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/observe': {
+      id: '/observe'
+      path: '/observe'
+      fullPath: '/observe'
+      preLoaderRoute: typeof ObserveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/database': {
+      id: '/database'
+      path: '/database'
+      fullPath: '/database'
+      preLoaderRoute: typeof DatabaseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/config': {
+      id: '/config'
+      path: '/config'
+      fullPath: '/config'
+      preLoaderRoute: typeof ConfigRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agent': {
+      id: '/agent'
+      path: '/agent'
+      fullPath: '/agent'
+      preLoaderRoute: typeof AgentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,6 +197,13 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AgentRoute: AgentRoute,
+  ConfigRoute: ConfigRoute,
+  DatabaseRoute: DatabaseRoute,
+  ObserveRoute: ObserveRoute,
+  PlaygroundRoute: PlaygroundRoute,
+  SkillEditorRoute: SkillEditorRoute,
+  SkillsRoute: SkillsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
