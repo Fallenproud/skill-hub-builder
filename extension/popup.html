@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>SkillHub Tracker</title>
+  <style>
+    body { width: 320px; margin: 0; padding: 14px; font-family: -apple-system, system-ui, sans-serif; background: #0a0a0a; color: #eaeaea; }
+    h1 { font-size: 13px; margin: 0 0 8px; letter-spacing: 0.1em; text-transform: uppercase; color: #ec4899; font-weight: 900; }
+    .sub { font-size: 9px; color: #6b7280; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 12px; }
+    label { display: block; font-size: 10px; color: #9ca3af; margin-top: 10px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.1em; }
+    input, textarea, button {
+      width: 100%; box-sizing: border-box; background: #141414; color: #eaeaea;
+      border: 1px solid #262626; border-radius: 4px; padding: 7px 8px; font-size: 11px; font-family: ui-monospace, monospace;
+    }
+    textarea { resize: vertical; min-height: 60px; }
+    button { cursor: pointer; font-weight: 700; margin-top: 8px; }
+    .primary { background: #ec489918; border-color: #ec489944; color: #ec4899; }
+    .secondary { background: #f59e0b18; border-color: #f59e0b44; color: #f59e0b; }
+    .danger { background: #dc262618; border-color: #dc262644; color: #dc2626; }
+    .row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+    .row input[type="checkbox"] { width: auto; }
+    .stats { font-size: 10px; color: #6b7280; margin-top: 12px; padding-top: 10px; border-top: 1px solid #262626; }
+    .stats strong { color: #eaeaea; }
+    .ok { color: #16a34a; }
+    .err { color: #dc2626; }
+    a { color: #22d3ee; text-decoration: none; font-size: 10px; }
+  </style>
+</head>
+<body>
+  <h1>◎ SkillHub</h1>
+  <div class="sub">tracker · v1.0.0</div>
+
+  <label>Quick task → Agent</label>
+  <textarea id="task" placeholder="Describe a task..."></textarea>
+  <button id="route" class="primary">↗ Route to Agent</button>
+
+  <label>Hub URL</label>
+  <input id="hub" placeholder="https://your-hub.lovable.app" />
+
+  <div class="row">
+    <input type="checkbox" id="sync" />
+    <label for="sync" style="margin: 0; text-transform: none; letter-spacing: 0; font-size: 11px; color: #eaeaea;">
+      Auto-sync captures to hub
+    </label>
+  </div>
+
+  <button id="syncNow" class="secondary">☁ Sync now</button>
+  <button id="clear" class="danger">✕ Clear local buffer</button>
+
+  <div class="stats">
+    Buffered: <strong id="bufCount">0</strong> requests<br/>
+    Last sync: <strong id="lastSync">never</strong><br/>
+    <span id="status"></span>
+  </div>
+
+  <div style="margin-top: 10px;">
+    <a href="#" id="openHub">Open hub →</a>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
