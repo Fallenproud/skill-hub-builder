@@ -131,21 +131,25 @@ function AgentPage() {
         const startedAt = new Date().toISOString();
         const t0 = performance.now();
 
-        // Insert log row
-        const { data: logRow } = await supabase
-          .from("execution_log")
-          .insert({
-            session_id: sId,
-            skill_id: step.skill,
-            skill_name: step.skill,
-            sequence_order: step.sequence,
-            reason: step.reason,
-            estimated_cost: step.estimated_cost,
-            status: "running",
-            started_at: startedAt,
-          })
-          .select()
-          .single();
+        // Insert log row only if we have a session
+        let logId: number | null = null;
+        if (sId) {
+          const { data: logRow } = await supabase
+            .from("execution_log")
+            .insert({
+              session_id: sId,
+              skill_id: step.skill,
+              skill_name: step.skill,
+              sequence_order: step.sequence,
+              reason: step.reason,
+              estimated_cost: step.estimated_cost,
+              status: "running",
+              started_at: startedAt,
+            })
+            .select()
+            .single();
+          logId = logRow?.id ?? null;
+        }
 
         setSteps(prev => prev.map((s, idx) => idx === i ? { ...s, status: "running" } : s));
 
@@ -164,11 +168,11 @@ function AgentPage() {
             const err = await execResp.json().catch(() => ({ error: "Failed" }));
             const msg = err.error || `HTTP ${execResp.status}`;
             setSteps(prev => prev.map((s, idx) => idx === i ? { ...s, status: "error", output: msg } : s));
-            if (logRow?.id) {
+            if (logId) {
               await supabase.from("execution_log").update({
                 status: "error", error_msg: msg, completed_at: new Date().toISOString(),
                 duration_ms: Math.round(performance.now() - t0),
-              }).eq("id", logRow.id);
+              }).eq("id", logId);
             }
             continue;
           }
@@ -182,14 +186,14 @@ function AgentPage() {
           const dur = Math.round(performance.now() - t0);
           setSteps(prev => prev.map((s, idx) => idx === i ? { ...s, status: "done", output: stepBuf, duration_ms: dur } : s));
 
-          if (logRow?.id) {
+          if (logId) {
             await supabase.from("execution_log").update({
               status: "done",
               stream_chunks: stepBuf,
               output_summary: stepBuf.slice(0, 240),
               completed_at: new Date().toISOString(),
               duration_ms: dur,
-            }).eq("id", logRow.id);
+            }).eq("id", logId);
           }
 
           // Chain output into context for next step
@@ -197,11 +201,11 @@ function AgentPage() {
         } catch (e) {
           const msg = e instanceof Error ? e.message : "Unknown error";
           setSteps(prev => prev.map((s, idx) => idx === i ? { ...s, status: "error", output: msg } : s));
-          if (logRow?.id) {
+          if (logId) {
             await supabase.from("execution_log").update({
               status: "error", error_msg: msg, completed_at: new Date().toISOString(),
               duration_ms: Math.round(performance.now() - t0),
-            }).eq("id", logRow.id);
+            }).eq("id", logId);
           }
         }
       }
