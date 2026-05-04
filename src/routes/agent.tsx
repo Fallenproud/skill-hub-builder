@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { consumeSSE, functionsAuthHeader, functionsUrl } from "@/lib/sse";
 
 export const Route = createFileRoute("/agent")({
@@ -41,6 +41,14 @@ function AgentPage() {
   const [steps, setSteps] = useState<StepRuntime[]>([]);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const routerBufRef = useRef("");
+
+  // Pre-fill task from ?task= query (used by Chrome extension popup)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    const t = url.searchParams.get("task");
+    if (t) setTask(t);
+  }, []);
 
   const reset = () => {
     setPhase("routing");
