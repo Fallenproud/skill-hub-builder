@@ -64,6 +64,18 @@ export const BUILTIN_PAGES: HubPage[] = [
     description: 'Database browser — inspect tables and data',
     built_in: true, enabled: true, sort_order: 7,
   },
+  {
+    id: 'extension', label: 'Extension', path: '/extension', icon: '⊕',
+    color: '#f59e0b', category: 'system',
+    description: 'Download & manage the API tracker Chrome extension',
+    built_in: true, enabled: true, sort_order: 8,
+  },
+  {
+    id: 'tracker', label: 'API Tracker', path: '/tracker', icon: '◐',
+    color: '#22d3ee', category: 'system',
+    description: 'Live feed of API endpoints captured by the extension',
+    built_in: true, enabled: true, sort_order: 9,
+  },
 ];
 
 export const CATEGORY_CONFIG: Record<string, { label: string; color: string }> = {
