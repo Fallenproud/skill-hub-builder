@@ -3,7 +3,7 @@
   "name": "SkillHub Tracker",
   "version": "1.0.0",
   "description": "Track API endpoints on the active tab and route quick tasks to your Skill Hub.",
-  "permissions": ["storage", "tabs", "webRequest", "activeTab"],
+  "permissions": ["storage", "tabs", "webRequest", "activeTab", "alarms"],
   "host_permissions": ["<all_urls>"],
   "action": {
     "default_popup": "popup.html",
