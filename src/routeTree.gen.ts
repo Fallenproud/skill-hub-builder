@@ -9,15 +9,23 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TrackerRouteImport } from './routes/tracker'
 import { Route as SkillsRouteImport } from './routes/skills'
 import { Route as SkillEditorRouteImport } from './routes/skill-editor'
 import { Route as PlaygroundRouteImport } from './routes/playground'
 import { Route as ObserveRouteImport } from './routes/observe'
+import { Route as ExtensionRouteImport } from './routes/extension'
 import { Route as DatabaseRouteImport } from './routes/database'
 import { Route as ConfigRouteImport } from './routes/config'
 import { Route as AgentRouteImport } from './routes/agent'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiPublicExtensionSyncRouteImport } from './routes/api/public/extension-sync'
 
+const TrackerRoute = TrackerRouteImport.update({
+  id: '/tracker',
+  path: '/tracker',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SkillsRoute = SkillsRouteImport.update({
   id: '/skills',
   path: '/skills',
@@ -36,6 +44,11 @@ const PlaygroundRoute = PlaygroundRouteImport.update({
 const ObserveRoute = ObserveRouteImport.update({
   id: '/observe',
   path: '/observe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExtensionRoute = ExtensionRouteImport.update({
+  id: '/extension',
+  path: '/extension',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DatabaseRoute = DatabaseRouteImport.update({
@@ -58,26 +71,37 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicExtensionSyncRoute = ApiPublicExtensionSyncRouteImport.update({
+  id: '/api/public/extension-sync',
+  path: '/api/public/extension-sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agent': typeof AgentRoute
   '/config': typeof ConfigRoute
   '/database': typeof DatabaseRoute
+  '/extension': typeof ExtensionRoute
   '/observe': typeof ObserveRoute
   '/playground': typeof PlaygroundRoute
   '/skill-editor': typeof SkillEditorRoute
   '/skills': typeof SkillsRoute
+  '/tracker': typeof TrackerRoute
+  '/api/public/extension-sync': typeof ApiPublicExtensionSyncRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agent': typeof AgentRoute
   '/config': typeof ConfigRoute
   '/database': typeof DatabaseRoute
+  '/extension': typeof ExtensionRoute
   '/observe': typeof ObserveRoute
   '/playground': typeof PlaygroundRoute
   '/skill-editor': typeof SkillEditorRoute
   '/skills': typeof SkillsRoute
+  '/tracker': typeof TrackerRoute
+  '/api/public/extension-sync': typeof ApiPublicExtensionSyncRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -85,10 +109,13 @@ export interface FileRoutesById {
   '/agent': typeof AgentRoute
   '/config': typeof ConfigRoute
   '/database': typeof DatabaseRoute
+  '/extension': typeof ExtensionRoute
   '/observe': typeof ObserveRoute
   '/playground': typeof PlaygroundRoute
   '/skill-editor': typeof SkillEditorRoute
   '/skills': typeof SkillsRoute
+  '/tracker': typeof TrackerRoute
+  '/api/public/extension-sync': typeof ApiPublicExtensionSyncRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -97,30 +124,39 @@ export interface FileRouteTypes {
     | '/agent'
     | '/config'
     | '/database'
+    | '/extension'
     | '/observe'
     | '/playground'
     | '/skill-editor'
     | '/skills'
+    | '/tracker'
+    | '/api/public/extension-sync'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/agent'
     | '/config'
     | '/database'
+    | '/extension'
     | '/observe'
     | '/playground'
     | '/skill-editor'
     | '/skills'
+    | '/tracker'
+    | '/api/public/extension-sync'
   id:
     | '__root__'
     | '/'
     | '/agent'
     | '/config'
     | '/database'
+    | '/extension'
     | '/observe'
     | '/playground'
     | '/skill-editor'
     | '/skills'
+    | '/tracker'
+    | '/api/public/extension-sync'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -128,14 +164,24 @@ export interface RootRouteChildren {
   AgentRoute: typeof AgentRoute
   ConfigRoute: typeof ConfigRoute
   DatabaseRoute: typeof DatabaseRoute
+  ExtensionRoute: typeof ExtensionRoute
   ObserveRoute: typeof ObserveRoute
   PlaygroundRoute: typeof PlaygroundRoute
   SkillEditorRoute: typeof SkillEditorRoute
   SkillsRoute: typeof SkillsRoute
+  TrackerRoute: typeof TrackerRoute
+  ApiPublicExtensionSyncRoute: typeof ApiPublicExtensionSyncRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tracker': {
+      id: '/tracker'
+      path: '/tracker'
+      fullPath: '/tracker'
+      preLoaderRoute: typeof TrackerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/skills': {
       id: '/skills'
       path: '/skills'
@@ -162,6 +208,13 @@ declare module '@tanstack/react-router' {
       path: '/observe'
       fullPath: '/observe'
       preLoaderRoute: typeof ObserveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/extension': {
+      id: '/extension'
+      path: '/extension'
+      fullPath: '/extension'
+      preLoaderRoute: typeof ExtensionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/database': {
@@ -192,6 +245,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/extension-sync': {
+      id: '/api/public/extension-sync'
+      path: '/api/public/extension-sync'
+      fullPath: '/api/public/extension-sync'
+      preLoaderRoute: typeof ApiPublicExtensionSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -200,10 +260,13 @@ const rootRouteChildren: RootRouteChildren = {
   AgentRoute: AgentRoute,
   ConfigRoute: ConfigRoute,
   DatabaseRoute: DatabaseRoute,
+  ExtensionRoute: ExtensionRoute,
   ObserveRoute: ObserveRoute,
   PlaygroundRoute: PlaygroundRoute,
   SkillEditorRoute: SkillEditorRoute,
   SkillsRoute: SkillsRoute,
+  TrackerRoute: TrackerRoute,
+  ApiPublicExtensionSyncRoute: ApiPublicExtensionSyncRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

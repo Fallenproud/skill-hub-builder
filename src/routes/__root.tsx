@@ -1,6 +1,7 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import HubSidebar from "@/components/HubSidebar";
 import HubTopBar from "@/components/HubTopBar";
+import ChatPanel from "@/components/ChatPanel";
 
 import appCss from "../styles.css?url";
 
@@ -62,6 +63,7 @@ function RootComponent() {
           <Outlet />
         </div>
       </main>
+      <ChatPanel />
     </div>
   );
 }
