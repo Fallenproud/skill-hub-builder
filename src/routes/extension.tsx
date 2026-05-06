@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/extension")({
   component: ExtensionPage,
@@ -27,6 +28,8 @@ function download() {
 }
 
 function ExtensionPage() {
+  const [origin, setOrigin] = useState("");
+  useEffect(() => { setOrigin(window.location.origin); }, []);
   return (
     <div className="p-7 max-w-[820px] mx-auto">
       <div className="mb-6">
@@ -82,7 +85,7 @@ function ExtensionPage() {
 
       <div className="bg-hub-surface border border-hub-border rounded-lg p-5">
         <div className="text-[10px] text-hub-text-dim tracking-[0.15em] uppercase mb-2 font-bold">Hub endpoint</div>
-        <code className="text-[11px] text-hub-pink font-mono break-all">{typeof window !== 'undefined' ? window.location.origin : ''}/api/public/extension-sync</code>
+        <code className="text-[11px] text-hub-pink font-mono break-all">{origin}/api/public/extension-sync</code>
         <div className="text-[10px] text-hub-text-muted mt-2">Pre-filled in the extension popup. Change it in Options if you self-host.</div>
       </div>
     </div>
