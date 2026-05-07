@@ -28,6 +28,10 @@
 
   <label>Hub URL</label>
   <input id="hub" placeholder="https://your-hub.lovable.app" />
+
+  <label>Sync Token (X-Extension-Token)</label>
+  <input id="token" type="password" placeholder="Paste EXTENSION_SYNC_TOKEN value" />
+
   <button id="save">Save</button>
   <span id="msg" class="saved"></span>
 
@@ -44,9 +48,16 @@
     const msg = document.getElementById('msg');
     const statusEl = document.getElementById('status');
 
-    chrome.storage.local.get(['hub_url']).then(({ hub_url }) => { hub.value = hub_url || ''; });
+    const token = document.getElementById('token');
+    chrome.storage.local.get(['hub_url', 'sync_token']).then(({ hub_url, sync_token }) => {
+      hub.value = hub_url || '';
+      token.value = sync_token || '';
+    });
     document.getElementById('save').onclick = async () => {
-      await chrome.storage.local.set({ hub_url: hub.value.trim() });
+      await chrome.storage.local.set({
+        hub_url: hub.value.trim(),
+        sync_token: token.value.trim(),
+      });
       msg.textContent = '✓ Saved';
       setTimeout(() => msg.textContent = '', 2000);
     };

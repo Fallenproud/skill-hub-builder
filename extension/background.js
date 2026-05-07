@@ -99,9 +99,13 @@ async function syncNow(trigger = "manual") {
   }
 
   try {
+    const { sync_token = "" } = await chrome.storage.local.get(["sync_token"]);
     const resp = await fetch(`${hub_url.replace(/\/$/, "")}/api/public/extension-sync`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...(sync_token ? { "X-Extension-Token": sync_token } : {}),
+      },
       body: JSON.stringify({ endpoints: buffer }),
     });
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
