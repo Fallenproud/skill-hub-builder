@@ -4,7 +4,7 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Headers": "Content-Type, X-Extension-Token",
 };
 
 interface SyncEndpoint {
@@ -23,6 +23,20 @@ export const Route = createFileRoute("/api/public/extension-sync")({
       OPTIONS: async () => new Response(null, { status: 204, headers: corsHeaders }),
       POST: async ({ request }) => {
         try {
+          const expected = process.env.EXTENSION_SYNC_TOKEN;
+          if (!expected) {
+            console.error("extension-sync: EXTENSION_SYNC_TOKEN not configured");
+            return new Response(JSON.stringify({ ok: false, error: "server misconfigured" }), {
+              status: 500, headers: { "Content-Type": "application/json", ...corsHeaders },
+            });
+          }
+          const provided = request.headers.get("x-extension-token") || "";
+          // constant-time-ish compare
+          if (provided.length !== expected.length || provided !== expected) {
+            return new Response(JSON.stringify({ ok: false, error: "unauthorized" }), {
+              status: 401, headers: { "Content-Type": "application/json", ...corsHeaders },
+            });
+          }
           const body = await request.json() as { endpoints?: SyncEndpoint[] };
           const items = (body.endpoints || []).slice(0, 500);
           if (items.length === 0) {
