@@ -76,6 +76,12 @@ export const BUILTIN_PAGES: HubPage[] = [
     description: 'Live feed of API endpoints captured by the extension',
     built_in: true, enabled: true, sort_order: 9,
   },
+  {
+    id: 'allowlist', label: 'Sync Allowlist', path: '/allowlist', icon: '⊜',
+    color: '#f43f5e', category: 'system',
+    description: 'Admin-only host patterns that the extension is allowed to sync',
+    built_in: true, enabled: true, sort_order: 10,
+  },
 ];
 
 export const CATEGORY_CONFIG: Record<string, { label: string; color: string }> = {
