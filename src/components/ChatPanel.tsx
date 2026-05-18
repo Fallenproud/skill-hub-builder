@@ -137,7 +137,7 @@ export default function ChatPanel() {
 
   return (
     <aside
-      className="flex flex-col flex-shrink-0 bg-sidebar border-l border-sidebar-border transition-all duration-200 overflow-hidden"
+      className="flex flex-col flex-shrink-0 bg-sidebar/80 backdrop-blur-xl border-l border-sidebar-border transition-all duration-200 overflow-hidden"
       style={{ width: collapsed ? 0 : 360 }}
     >
       <div

@@ -2,6 +2,7 @@ import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/r
 import HubSidebar from "@/components/HubSidebar";
 import HubTopBar from "@/components/HubTopBar";
 import ChatPanel from "@/components/ChatPanel";
+import AmbientMesh from "@/components/AmbientMesh";
 
 import appCss from "../styles.css?url";
 
@@ -86,7 +87,8 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-screen bg-background relative">
+      <AmbientMesh />
       <HubSidebar />
       <main className="flex-1 overflow-hidden flex flex-col">
         <HubTopBar />
