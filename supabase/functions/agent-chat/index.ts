@@ -5,10 +5,39 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+async function verifyAuth(req: Request): Promise<Response | null> {
+  const authHeader = req.headers.get("authorization") || "";
+  const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+  const anon = Deno.env.get("SUPABASE_ANON_KEY") || Deno.env.get("SUPABASE_PUBLISHABLE_KEY") || "";
+  if (!token || token === anon) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+  if (!SUPABASE_URL || !anon) {
+    return new Response(JSON.stringify({ error: "Auth not configured" }), {
+      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+    headers: { Authorization: `Bearer ${token}`, apikey: anon },
+  });
+  if (!res.ok) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  return null;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    const authErr = await verifyAuth(req);
+    if (authErr) return authErr;
+
     const { messages, context } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
