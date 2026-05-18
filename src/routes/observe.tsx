@@ -7,7 +7,13 @@ export const Route = createFileRoute("/observe")({
   head: () => ({
     meta: [
       { title: "Observability — Skill Hub" },
-      { name: "description", content: "Analytics, session history, and execution drill-down" },
+      { name: "description", content: "Analytics, session history, and execution drill-down for every agent run on Skill Hub." },
+      { property: "og:title", content: "Observability — Skill Hub" },
+      { property: "og:description", content: "Session history, execution logs, and analytics for agent runs." },
+      { property: "og:url", content: "https://my-agenthub.lovable.app/observe" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://my-agenthub.lovable.app/observe" },
     ],
   }),
 });

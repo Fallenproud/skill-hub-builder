@@ -7,7 +7,13 @@ export const Route = createFileRoute("/config")({
   head: () => ({
     meta: [
       { title: "Agent Config — Skill Hub" },
-      { name: "description", content: "Configure agent name, persona, memory, and preferences" },
+      { name: "description", content: "Configure agent name, persona, default context, cost preference, and long-term memory entries." },
+      { property: "og:title", content: "Agent Config — Skill Hub" },
+      { property: "og:description", content: "Configure agent persona, memory, and routing preferences." },
+      { property: "og:url", content: "https://my-agenthub.lovable.app/config" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://my-agenthub.lovable.app/config" },
     ],
   }),
 });
@@ -121,6 +127,7 @@ function AgentConfigPage() {
               value={newMem}
               onChange={e => setNewMem(e.target.value)}
               placeholder="Something your agent should remember..."
+              aria-label="New memory content"
               rows={2}
               className="w-full bg-transparent text-foreground text-[11px] outline-none resize-none font-mono"
             />
@@ -128,6 +135,7 @@ function AgentConfigPage() {
               <select
                 value={importance}
                 onChange={e => setImportance(parseInt(e.target.value))}
+                aria-label="Memory importance"
                 className="bg-input border border-border rounded p-1 text-[10px] outline-none"
                 style={{ color: IMP_COLORS[importance] }}
               >

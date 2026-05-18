@@ -7,7 +7,13 @@ export const Route = createFileRoute("/database")({
   head: () => ({
     meta: [
       { title: "Database — Skill Hub" },
-      { name: "description", content: "Browse database tables and data" },
+      { name: "description", content: "Inspect raw rows in Skill Hub registry tables — skills, categories, sessions, execution logs, and memories." },
+      { property: "og:title", content: "Database Browser — Skill Hub" },
+      { property: "og:description", content: "Inspect raw rows in Skill Hub registry tables." },
+      { property: "og:url", content: "https://my-agenthub.lovable.app/database" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://my-agenthub.lovable.app/database" },
     ],
   }),
 });
@@ -41,6 +47,7 @@ function DatabasePage() {
 
   return (
     <div className="h-full flex flex-col">
+      <h1 className="sr-only">Database Browser</h1>
       {/* Table tabs */}
       <div className="p-3 px-5 border-b border-border bg-sidebar flex gap-1.5 flex-wrap items-center flex-shrink-0">
         {TABLES.map(t => (

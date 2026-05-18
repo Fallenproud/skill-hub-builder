@@ -7,7 +7,26 @@ export const Route = createFileRoute("/skills")({
   head: () => ({
     meta: [
       { title: "Skill Registry — Skill Hub" },
-      { name: "description", content: "Browse, search, and filter all 88 agent skills" },
+      { name: "description", content: "Browse, search, and filter all 88 agent skills with cost, latency, and routing metadata." },
+      { property: "og:title", content: "Skill Registry — 88 Agent Skills" },
+      { property: "og:description", content: "Browse, search, and filter all 88 agent skills with cost and latency metadata." },
+      { property: "og:url", content: "https://my-agenthub.lovable.app/skills" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://my-agenthub.lovable.app/skills" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          name: "Skill Hub — Agent Skill Registry",
+          description: "Registry of 88 agent skills across 10 categories.",
+          numberOfItems: 88,
+          url: "https://my-agenthub.lovable.app/skills",
+        }),
+      },
     ],
   }),
 });
@@ -76,17 +95,20 @@ function SkillRegistryPage() {
 
   return (
     <div className="h-full flex flex-col">
+      <h1 className="sr-only">Skill Registry</h1>
       {/* Toolbar */}
       <div className="p-3 px-5 border-b border-border bg-sidebar flex gap-2.5 flex-wrap items-center flex-shrink-0">
         <input
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="⌕  search skills..."
+          aria-label="Search skills"
           className="flex-1 min-w-[180px] py-1.5 px-2.5 bg-input border border-border rounded text-foreground text-[11px] outline-none"
         />
         <select
           value={catFilter}
           onChange={e => setCatFilter(e.target.value)}
+          aria-label="Filter by category"
           className="bg-input border border-border text-muted-foreground text-[11px] py-1.5 px-2.5 rounded outline-none"
         >
           <option value="">All Categories</option>
@@ -95,6 +117,7 @@ function SkillRegistryPage() {
         <select
           value={costFilter}
           onChange={e => setCostFilter(e.target.value)}
+          aria-label="Filter by cost class"
           className="bg-input border border-border text-muted-foreground text-[11px] py-1.5 px-2.5 rounded outline-none"
         >
           <option value="">All Costs</option>

@@ -6,7 +6,13 @@ export const Route = createFileRoute("/extension")({
   head: () => ({
     meta: [
       { title: "Extension — Skill Hub" },
-      { name: "description", content: "Download the SkillHub Chrome extension to track API endpoints and route tasks from any tab" },
+      { name: "description", content: "Download the SkillHub Chrome extension to track API endpoints and route tasks from any tab." },
+      { property: "og:title", content: "SkillHub Chrome Extension" },
+      { property: "og:description", content: "Track API endpoints and route agent tasks from any tab." },
+      { property: "og:url", content: "https://my-agenthub.lovable.app/extension" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://my-agenthub.lovable.app/extension" },
     ],
   }),
 });
@@ -63,7 +69,7 @@ function ExtensionPage() {
       </div>
 
       <div className="bg-hub-surface border border-hub-border rounded-lg p-5 mb-5">
-        <div className="text-[10px] text-hub-text-dim tracking-[0.15em] uppercase mb-3 font-bold">Install</div>
+        <h2 className="text-[10px] text-hub-text-dim tracking-[0.15em] uppercase mb-3 font-bold">Installation</h2>
         <ol className="text-[11.5px] text-foreground space-y-2 list-decimal list-inside">
           <li>Unzip the downloaded file.</li>
           <li>Open <code className="font-mono text-hub-pink">chrome://extensions</code> in Chrome (or any Chromium browser).</li>
@@ -74,7 +80,7 @@ function ExtensionPage() {
       </div>
 
       <div className="bg-hub-surface border border-hub-border rounded-lg p-5 mb-5">
-        <div className="text-[10px] text-hub-text-dim tracking-[0.15em] uppercase mb-3 font-bold">What it does</div>
+        <h2 className="text-[10px] text-hub-text-dim tracking-[0.15em] uppercase mb-3 font-bold">Features</h2>
         <ul className="text-[11.5px] text-foreground space-y-1.5">
           <li>◎ <strong>Quick route</strong> — type a task in the popup, sends it to <code className="font-mono text-hub-pink">/agent</code></li>
           <li>⊕ <strong>API tracker</strong> — logs URL · method · status · duration locally</li>
@@ -84,7 +90,7 @@ function ExtensionPage() {
       </div>
 
       <div className="bg-hub-surface border border-hub-border rounded-lg p-5">
-        <div className="text-[10px] text-hub-text-dim tracking-[0.15em] uppercase mb-2 font-bold">Hub endpoint</div>
+        <h2 className="text-[10px] text-hub-text-dim tracking-[0.15em] uppercase mb-2 font-bold">Hub Endpoint</h2>
         <code className="text-[11px] text-hub-pink font-mono break-all">{origin}/api/public/extension-sync</code>
         <div className="text-[10px] text-hub-text-muted mt-2">Pre-filled in the extension popup. Change it in Options if you self-host.</div>
       </div>

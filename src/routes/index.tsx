@@ -10,6 +10,12 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: "Skill Hub — Agent OS" },
       { name: "description", content: "Production-grade meta-agent skill registry with 88 skills, live database, and AI routing" },
+      { property: "og:title", content: "Skill Hub — Agent Skill Registry" },
+      { property: "og:description", content: "Production-grade meta-agent skill registry with 88 skills, live database, and AI routing." },
+      { property: "og:url", content: "https://my-agenthub.lovable.app/" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://my-agenthub.lovable.app/" },
     ],
   }),
 });
@@ -73,7 +79,7 @@ function HomePage() {
           Agent OS · Skill Hub
         </div>
         <h1 className="font-display text-3xl font-black text-foreground tracking-tight leading-none">
-          {agentName}
+          {agentName} — Agent Skill Registry
         </h1>
         <p className="text-[11px] text-hub-text-muted mt-2">
           Production-grade meta-agent skill registry with live database and AI routing
@@ -96,7 +102,7 @@ function HomePage() {
 
       {/* Quick nav */}
       <div className="mb-8">
-        <div className="text-[9px] text-hub-text-dim tracking-[0.15em] uppercase mb-3">Quick Access</div>
+        <h2 className="text-[9px] text-hub-text-dim tracking-[0.15em] uppercase mb-3 font-bold">Quick Access</h2>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-2.5">
           {BUILTIN_PAGES.filter(p => p.path !== "/").map(page => (
             <Link
@@ -116,7 +122,7 @@ function HomePage() {
       {/* Category breakdown */}
       {stats && (
         <div>
-          <div className="text-[9px] text-hub-text-dim tracking-[0.15em] uppercase mb-3">Skills by Category</div>
+          <h2 className="text-[9px] text-hub-text-dim tracking-[0.15em] uppercase mb-3 font-bold">Skills by Category</h2>
           <div className="flex flex-col gap-1.5">
             {stats.byCategory.map(cat => (
               <div key={cat.name} className="flex items-center gap-2.5">
