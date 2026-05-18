@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { BUILTIN_PAGES } from "@/lib/hub-registry";
+import TiltCard from "@/components/TiltCard";
 
 export const Route = createFileRoute("/")({
   component: HomePage,
@@ -72,13 +73,13 @@ function HomePage() {
   ] : [];
 
   return (
-    <div className="p-7 max-w-[1100px] mx-auto">
+    <div className="p-7 max-w-[1100px] mx-auto animate-fade-in">
       {/* Header */}
       <div className="mb-8">
         <div className="text-[9px] text-hub-text-dim tracking-[0.2em] uppercase mb-1.5">
           Agent OS · Skill Hub
         </div>
-        <h1 className="font-display text-3xl font-black text-foreground tracking-tight leading-none">
+        <h1 className="font-display text-4xl font-black tracking-tight leading-none gradient-text">
           {agentName} — Agent Skill Registry
         </h1>
         <p className="text-[11px] text-hub-text-muted mt-2">
@@ -90,12 +91,12 @@ function HomePage() {
       {stats && (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(130px,1fr))] gap-2.5 mb-8">
           {statCards.map(s => (
-            <div key={s.label} className="bg-hub-surface border border-hub-border rounded-lg p-3.5 text-center">
+            <TiltCard key={s.label} className="glass-panel hover-lift shimmer-sweep p-3.5 text-center">
               <div className="font-display text-3xl font-black leading-none" style={{ color: s.color }}>
                 {s.val}
               </div>
               <div className="text-[9px] text-hub-text-dim mt-1.5 uppercase tracking-wider">{s.label}</div>
-            </div>
+            </TiltCard>
           ))}
         </div>
       )}
@@ -108,8 +109,8 @@ function HomePage() {
             <Link
               key={page.id}
               to={page.path}
-              className="bg-hub-surface rounded-lg p-4 text-left no-underline transition-all duration-150 hover:bg-hub-surface-hover group"
-              style={{ border: `1px solid ${page.color}22` }}
+              className="glass-panel hover-lift shimmer-sweep p-4 text-left no-underline group block"
+              style={{ borderColor: `color-mix(in oklab, ${page.color} 28%, transparent)` }}
             >
               <div className="text-[22px] mb-2" style={{ color: page.color }}>{page.icon}</div>
               <div className="text-[13px] font-bold text-foreground mb-1">{page.label}</div>
@@ -121,7 +122,7 @@ function HomePage() {
 
       {/* Category breakdown */}
       {stats && (
-        <div>
+        <div className="glass-panel p-5">
           <h2 className="text-[9px] text-hub-text-dim tracking-[0.15em] uppercase mb-3 font-bold">Skills by Category</h2>
           <div className="flex flex-col gap-1.5">
             {stats.byCategory.map(cat => (

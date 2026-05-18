@@ -22,7 +22,7 @@ export default function HubTopBar() {
   const signOut = async () => { await supabase.auth.signOut(); };
 
   return (
-    <div className="h-9 border-b border-border bg-sidebar flex items-center px-4 gap-3 flex-shrink-0">
+    <div className="h-9 border-b border-border bg-sidebar/70 backdrop-blur-xl flex items-center px-4 gap-3 flex-shrink-0">
       <div className="flex items-center gap-2">
         <span className="text-[10px] text-hub-text-dim">SKILL HUB</span>
         {current && (

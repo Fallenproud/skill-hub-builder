@@ -15,7 +15,7 @@ export default function HubSidebar() {
 
   return (
     <aside
-      className="flex flex-col flex-shrink-0 bg-sidebar border-r border-sidebar-border transition-all duration-200 overflow-hidden"
+      className="flex flex-col flex-shrink-0 bg-sidebar/80 backdrop-blur-xl border-r border-sidebar-border transition-all duration-200 overflow-hidden"
       style={{ width: collapsed ? 52 : 200 }}
     >
       {/* Logo */}
