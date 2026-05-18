@@ -7,7 +7,13 @@ export const Route = createFileRoute("/skill-editor")({
   head: () => ({
     meta: [
       { title: "Skill Editor — Skill Hub" },
-      { name: "description", content: "Edit trigger conditions, boundaries, and routing metadata" },
+      { name: "description", content: "Edit trigger conditions, boundaries, and routing metadata for any skill in the registry." },
+      { property: "og:title", content: "Skill Editor — Skill Hub" },
+      { property: "og:description", content: "Edit trigger conditions, boundaries, and routing metadata." },
+      { property: "og:url", content: "https://my-agenthub.lovable.app/skill-editor" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://my-agenthub.lovable.app/skill-editor" },
     ],
   }),
 });
@@ -40,6 +46,7 @@ function SkillEditorPage() {
 
   return (
     <div className="h-full flex">
+      <h1 className="sr-only">Skill Editor</h1>
       {/* Skill list */}
       <div className="w-[240px] border-r border-border bg-sidebar flex flex-col flex-shrink-0">
         <div className="p-3 border-b border-border">
@@ -47,6 +54,7 @@ function SkillEditorPage() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search skills..."
+            aria-label="Search skills"
             className="w-full bg-input border border-border rounded p-1.5 text-foreground text-[10px] outline-none"
           />
         </div>

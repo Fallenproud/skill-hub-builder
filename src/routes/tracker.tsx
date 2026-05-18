@@ -7,7 +7,13 @@ export const Route = createFileRoute("/tracker")({
   head: () => ({
     meta: [
       { title: "API Tracker — Skill Hub" },
-      { name: "description", content: "Live feed of API endpoints captured by the Chrome extension" },
+      { name: "description", content: "Live feed of API endpoints captured by the SkillHub Chrome extension — URL, method, status, and duration." },
+      { property: "og:title", content: "API Tracker — Skill Hub" },
+      { property: "og:description", content: "Live feed of API endpoints captured by the SkillHub Chrome extension." },
+      { property: "og:url", content: "https://my-agenthub.lovable.app/tracker" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://my-agenthub.lovable.app/tracker" },
     ],
   }),
 });
@@ -82,6 +88,7 @@ function TrackerPage() {
           value={filter}
           onChange={e => setFilter(e.target.value)}
           placeholder="Filter by host or URL…"
+          aria-label="Filter by host or URL"
           className="flex-1 bg-input border border-border rounded p-2 text-foreground text-[11px] outline-none font-mono"
         />
         <button

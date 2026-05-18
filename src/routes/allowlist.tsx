@@ -7,7 +7,13 @@ export const Route = createFileRoute("/allowlist")({
   head: () => ({
     meta: [
       { title: "Sync Allowlist — Skill Hub" },
-      { name: "description", content: "Admin-managed host patterns the extension is allowed to sync" },
+      { name: "description", content: "Admin-managed host patterns that the SkillHub extension is allowed to sync API endpoints from." },
+      { property: "og:title", content: "Sync Allowlist — Skill Hub" },
+      { property: "og:description", content: "Admin-managed host patterns for the extension sync endpoint." },
+      { property: "og:url", content: "https://my-agenthub.lovable.app/allowlist" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://my-agenthub.lovable.app/allowlist" },
     ],
   }),
 });
@@ -103,11 +109,13 @@ function AllowlistPage() {
           <input
             value={pattern} onChange={e => setPattern(e.target.value)}
             placeholder="api.example.com or *.example.com or *"
+            aria-label="Host pattern"
             className="flex-1 bg-hub-bg border border-hub-border rounded px-3 py-2 text-[12px] font-mono text-foreground"
           />
           <input
             value={note} onChange={e => setNote(e.target.value)}
             placeholder="note (optional)"
+            aria-label="Note"
             className="w-[200px] bg-hub-bg border border-hub-border rounded px-3 py-2 text-[12px] text-foreground"
           />
           <button onClick={add} className="px-4 py-2 rounded text-[11px] font-bold cursor-pointer" style={{ background: "#f43f5e18", border: "1px solid #f43f5e44", color: "#f43f5e" }}>

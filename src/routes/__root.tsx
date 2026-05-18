@@ -36,10 +36,33 @@ export const Route = createRootRoute({
       { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/hb4FQ2NfkDdULU7YveE5vtJNxOc2/social-images/social-1777905135708-orynero-main-logo.webp" },
       { name: "twitter:card", content: "summary_large_image" },
       { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "Skill Hub" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "Skill Hub",
+          url: "https://my-agenthub.lovable.app",
+          description: "Production-grade meta-agent skill registry with 88 skills, live database, and AI routing.",
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "Skill Hub",
+          url: "https://my-agenthub.lovable.app",
+          logo: "https://storage.googleapis.com/gpt-engineer-file-uploads/hb4FQ2NfkDdULU7YveE5vtJNxOc2/social-images/social-1777905135708-orynero-main-logo.webp",
+        }),
+      },
     ],
   }),
   shellComponent: RootShell,

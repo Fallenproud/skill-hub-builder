@@ -7,7 +7,13 @@ export const Route = createFileRoute("/playground")({
   head: () => ({
     meta: [
       { title: "Playground — Skill Hub" },
-      { name: "description", content: "Test any skill directly without routing overhead" },
+      { name: "description", content: "Test any agent skill directly without routing overhead — pick a skill, send a task, stream the output." },
+      { property: "og:title", content: "Skill Playground — Skill Hub" },
+      { property: "og:description", content: "Test any agent skill directly without routing overhead." },
+      { property: "og:url", content: "https://my-agenthub.lovable.app/playground" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://my-agenthub.lovable.app/playground" },
     ],
   }),
 });
@@ -98,6 +104,7 @@ function PlaygroundPage() {
           <select
             value={selectedSkill}
             onChange={e => setSelectedSkill(e.target.value)}
+            aria-label="Select skill"
             className="w-full bg-input border border-border rounded p-2 text-foreground text-[11px] outline-none"
           >
             <option value="">Select a skill...</option>
@@ -111,6 +118,7 @@ function PlaygroundPage() {
             value={task}
             onChange={e => setTask(e.target.value)}
             placeholder="What should this skill do?"
+            aria-label="Task description"
             rows={3}
             className="w-full bg-input border border-border rounded p-2.5 text-foreground text-[12px] outline-none resize-none font-mono"
           />

@@ -209,6 +209,7 @@ export default function ChatPanel() {
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input); } }}
             placeholder={streaming ? "Streaming..." : "Ask anything…"}
+            aria-label="Chat message"
             disabled={streaming}
             className="flex-1 bg-input border border-border rounded p-2 text-foreground text-[11px] outline-none font-mono disabled:opacity-50"
           />

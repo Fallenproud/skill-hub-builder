@@ -8,7 +8,13 @@ export const Route = createFileRoute("/agent")({
   head: () => ({
     meta: [
       { title: "Agent — Skill Hub" },
-      { name: "description", content: "Route, execute, and stream results across the skill registry" },
+      { name: "description", content: "Route, execute, and stream results across the skill registry — the agent cockpit for live multi-skill task execution." },
+      { property: "og:title", content: "Agent Cockpit — Route & Execute" },
+      { property: "og:description", content: "Describe a task, watch the router pick skills, and stream live execution output." },
+      { property: "og:url", content: "https://my-agenthub.lovable.app/agent" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://my-agenthub.lovable.app/agent" },
     ],
   }),
 });
@@ -250,10 +256,12 @@ function AgentPage() {
       </div>
 
       <div className="bg-hub-surface border border-hub-border rounded-lg p-4 mb-6">
+        <h2 className="sr-only">Task Input</h2>
         <textarea
           value={task}
           onChange={e => setTask(e.target.value)}
           placeholder="Describe your task..."
+          aria-label="Task description"
           rows={3}
           disabled={phase === "routing" || phase === "executing"}
           className="w-full bg-input border border-border rounded p-2.5 text-foreground text-[12px] outline-none resize-none font-mono disabled:opacity-60"
@@ -276,7 +284,7 @@ function AgentPage() {
 
       {phase === "idle" && (
         <div className="mb-6">
-          <div className="text-[9px] text-hub-text-dim tracking-[0.15em] uppercase mb-2">Sample Tasks</div>
+          <h2 className="text-[9px] text-hub-text-dim tracking-[0.15em] uppercase mb-2 font-bold">Sample Tasks</h2>
           <div className="flex flex-col gap-1.5">
             {SAMPLES.map(s => (
               <button
@@ -305,6 +313,7 @@ function AgentPage() {
 
       {steps.length > 0 && (
         <div className="space-y-3">
+          <h2 className="sr-only">Execution Details</h2>
           {steps.map((step, i) => {
             const accent = step.status === "done" ? "#16a34a"
               : step.status === "error" ? "#dc2626"
