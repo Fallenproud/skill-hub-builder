@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TrackerRouteImport } from './routes/tracker'
 import { Route as SkillsRouteImport } from './routes/skills'
 import { Route as SkillEditorRouteImport } from './routes/skill-editor'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PlaygroundRouteImport } from './routes/playground'
 import { Route as ObserveRouteImport } from './routes/observe'
 import { Route as ExtensionRouteImport } from './routes/extension'
@@ -35,6 +36,11 @@ const SkillsRoute = SkillsRouteImport.update({
 const SkillEditorRoute = SkillEditorRouteImport.update({
   id: '/skill-editor',
   path: '/skill-editor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlaygroundRoute = PlaygroundRouteImport.update({
@@ -92,6 +98,7 @@ export interface FileRoutesByFullPath {
   '/extension': typeof ExtensionRoute
   '/observe': typeof ObserveRoute
   '/playground': typeof PlaygroundRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/skill-editor': typeof SkillEditorRoute
   '/skills': typeof SkillsRoute
   '/tracker': typeof TrackerRoute
@@ -106,6 +113,7 @@ export interface FileRoutesByTo {
   '/extension': typeof ExtensionRoute
   '/observe': typeof ObserveRoute
   '/playground': typeof PlaygroundRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/skill-editor': typeof SkillEditorRoute
   '/skills': typeof SkillsRoute
   '/tracker': typeof TrackerRoute
@@ -121,6 +129,7 @@ export interface FileRoutesById {
   '/extension': typeof ExtensionRoute
   '/observe': typeof ObserveRoute
   '/playground': typeof PlaygroundRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/skill-editor': typeof SkillEditorRoute
   '/skills': typeof SkillsRoute
   '/tracker': typeof TrackerRoute
@@ -137,6 +146,7 @@ export interface FileRouteTypes {
     | '/extension'
     | '/observe'
     | '/playground'
+    | '/sitemap.xml'
     | '/skill-editor'
     | '/skills'
     | '/tracker'
@@ -151,6 +161,7 @@ export interface FileRouteTypes {
     | '/extension'
     | '/observe'
     | '/playground'
+    | '/sitemap.xml'
     | '/skill-editor'
     | '/skills'
     | '/tracker'
@@ -165,6 +176,7 @@ export interface FileRouteTypes {
     | '/extension'
     | '/observe'
     | '/playground'
+    | '/sitemap.xml'
     | '/skill-editor'
     | '/skills'
     | '/tracker'
@@ -180,6 +192,7 @@ export interface RootRouteChildren {
   ExtensionRoute: typeof ExtensionRoute
   ObserveRoute: typeof ObserveRoute
   PlaygroundRoute: typeof PlaygroundRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SkillEditorRoute: typeof SkillEditorRoute
   SkillsRoute: typeof SkillsRoute
   TrackerRoute: typeof TrackerRoute
@@ -207,6 +220,13 @@ declare module '@tanstack/react-router' {
       path: '/skill-editor'
       fullPath: '/skill-editor'
       preLoaderRoute: typeof SkillEditorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/playground': {
@@ -284,6 +304,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExtensionRoute: ExtensionRoute,
   ObserveRoute: ObserveRoute,
   PlaygroundRoute: PlaygroundRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   SkillEditorRoute: SkillEditorRoute,
   SkillsRoute: SkillsRoute,
   TrackerRoute: TrackerRoute,

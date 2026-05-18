@@ -1,0 +1,20 @@
+# Skill Hub
+
+> Production-grade meta-agent skill registry. 88 agent skills across 10 categories with live AI routing, execution streaming, and observability.
+
+Skill Hub is a developer tool for orchestrating AI agent skills. It maintains a queryable registry of skills (each with cost, latency, and routing metadata), exposes a router that picks the right skill chain for a task, and streams execution results live.
+
+## Pages
+
+- [Home](/): Overview, skill counts, and category breakdown.
+- [Agent](/agent): Describe a task and watch the router pick + execute skills with streaming output.
+- [Skill Registry](/skills): Browse, search, and filter all 88 agent skills.
+- [Playground](/playground): Execute any single skill directly without routing overhead.
+- [Observability](/observe): Session history, execution logs, and analytics.
+- [API Tracker](/tracker): Live feed of API endpoints captured by the Chrome extension.
+- [Extension](/extension): Download the SkillHub Chrome extension.
+
+## Optional
+
+- [Database Browser](/database): Inspect raw rows in registry tables.
+- [Agent Config](/config): Tune agent persona, default context, and memory.
