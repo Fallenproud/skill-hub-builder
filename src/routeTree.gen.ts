@@ -17,6 +17,7 @@ import { Route as ObserveRouteImport } from './routes/observe'
 import { Route as ExtensionRouteImport } from './routes/extension'
 import { Route as DatabaseRouteImport } from './routes/database'
 import { Route as ConfigRouteImport } from './routes/config'
+import { Route as AllowlistRouteImport } from './routes/allowlist'
 import { Route as AgentRouteImport } from './routes/agent'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiPublicExtensionSyncRouteImport } from './routes/api/public/extension-sync'
@@ -61,6 +62,11 @@ const ConfigRoute = ConfigRouteImport.update({
   path: '/config',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AllowlistRoute = AllowlistRouteImport.update({
+  id: '/allowlist',
+  path: '/allowlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AgentRoute = AgentRouteImport.update({
   id: '/agent',
   path: '/agent',
@@ -80,6 +86,7 @@ const ApiPublicExtensionSyncRoute = ApiPublicExtensionSyncRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agent': typeof AgentRoute
+  '/allowlist': typeof AllowlistRoute
   '/config': typeof ConfigRoute
   '/database': typeof DatabaseRoute
   '/extension': typeof ExtensionRoute
@@ -93,6 +100,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agent': typeof AgentRoute
+  '/allowlist': typeof AllowlistRoute
   '/config': typeof ConfigRoute
   '/database': typeof DatabaseRoute
   '/extension': typeof ExtensionRoute
@@ -107,6 +115,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/agent': typeof AgentRoute
+  '/allowlist': typeof AllowlistRoute
   '/config': typeof ConfigRoute
   '/database': typeof DatabaseRoute
   '/extension': typeof ExtensionRoute
@@ -122,6 +131,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/agent'
+    | '/allowlist'
     | '/config'
     | '/database'
     | '/extension'
@@ -135,6 +145,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/agent'
+    | '/allowlist'
     | '/config'
     | '/database'
     | '/extension'
@@ -148,6 +159,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/agent'
+    | '/allowlist'
     | '/config'
     | '/database'
     | '/extension'
@@ -162,6 +174,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AgentRoute: typeof AgentRoute
+  AllowlistRoute: typeof AllowlistRoute
   ConfigRoute: typeof ConfigRoute
   DatabaseRoute: typeof DatabaseRoute
   ExtensionRoute: typeof ExtensionRoute
@@ -231,6 +244,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConfigRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/allowlist': {
+      id: '/allowlist'
+      path: '/allowlist'
+      fullPath: '/allowlist'
+      preLoaderRoute: typeof AllowlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/agent': {
       id: '/agent'
       path: '/agent'
@@ -258,6 +278,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AgentRoute: AgentRoute,
+  AllowlistRoute: AllowlistRoute,
   ConfigRoute: ConfigRoute,
   DatabaseRoute: DatabaseRoute,
   ExtensionRoute: ExtensionRoute,

@@ -86,6 +86,33 @@ export type Database = {
         }
         Relationships: []
       }
+      api_endpoint_allowlist: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          id: string
+          note: string | null
+          pattern: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          note?: string | null
+          pattern: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          note?: string | null
+          pattern?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       api_endpoints: {
         Row: {
           captured_at: string | null

@@ -45,7 +45,27 @@ export const Route = createFileRoute("/api/public/extension-sync")({
             });
           }
 
-          const rows = items
+          // Load admin-managed host allowlist
+          const { data: allowRows } = await supabaseAdmin
+            .from("api_endpoint_allowlist")
+            .select("pattern")
+            .eq("enabled", true);
+          const patterns = (allowRows || []).map(r => r.pattern as string);
+          const matchHost = (host: string | null) => {
+            if (!host) return false;
+            for (const p of patterns) {
+              if (p === "*") return true;
+              if (p.startsWith("*.")) {
+                const suffix = p.slice(1); // ".example.com"
+                if (host === suffix.slice(1) || host.endsWith(suffix)) return true;
+              } else if (p === host) {
+                return true;
+              }
+            }
+            return false;
+          };
+
+          const mapped = items
             .filter(e => typeof e.url === "string" && e.url.length < 2000)
             .map(e => {
               let host: string | null = null;
@@ -63,6 +83,15 @@ export const Route = createFileRoute("/api/public/extension-sync")({
               };
             });
 
+          const rows = mapped.filter(r => matchHost(r.host));
+          const skipped = mapped.length - rows.length;
+
+          if (rows.length === 0) {
+            return new Response(JSON.stringify({ ok: true, inserted: 0, skipped, reason: patterns.length === 0 ? "allowlist_empty" : "no_matches" }), {
+              status: 200, headers: { "Content-Type": "application/json", ...corsHeaders },
+            });
+          }
+
           const { error, count } = await supabaseAdmin
             .from("api_endpoints")
             .insert(rows, { count: "exact" });
@@ -74,7 +103,7 @@ export const Route = createFileRoute("/api/public/extension-sync")({
             });
           }
 
-          return new Response(JSON.stringify({ ok: true, inserted: count ?? rows.length }), {
+          return new Response(JSON.stringify({ ok: true, inserted: count ?? rows.length, skipped }), {
             status: 200, headers: { "Content-Type": "application/json", ...corsHeaders },
           });
         } catch (e) {
