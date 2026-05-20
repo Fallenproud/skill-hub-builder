@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState, useCallback } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { testSkillHubPing } from "@/lib/skillhub-test.functions";
 
 export const Route = createFileRoute("/config")({
   component: AgentConfigPage,
@@ -170,6 +172,83 @@ function AgentConfigPage() {
             )}
           </div>
         </div>
+      </div>
+
+      <IntegrationPanel />
+    </div>
+  );
+}
+
+function IntegrationPanel() {
+  const ping = useServerFn(testSkillHubPing);
+  const [results, setResults] = useState<Record<string, { ok: boolean; status: number; message: string } | "loading">>({});
+
+  const run = async (mode: "valid" | "bad-signature" | "stale-timestamp" | "missing-secret-check") => {
+    setResults((r) => ({ ...r, [mode]: "loading" }));
+    const res = await ping({ data: { mode } });
+    setResults((r) => ({ ...r, [mode]: res }));
+  };
+
+  const curlExample = `TS=$(date +%s)
+BODY='{"action":"ping"}'
+SIG=$(printf "%s.%s" "$TS" "$BODY" | openssl dgst -sha256 -hmac "$SKILL_HUB_SHARED_SECRET" -hex | awk '{print $2}')
+curl -X POST https://my-agenthub.lovable.app/api/public/skillhub \\
+  -H "Content-Type: application/json" \\
+  -H "X-Hub-Timestamp: $TS" \\
+  -H "X-Hub-Signature: $SIG" \\
+  -d "$BODY"`;
+
+  const Row = ({ label, value }: { label: string; value: string }) => (
+    <div className="flex gap-3 text-[11px] py-1">
+      <div className="text-hub-text-dim w-28 flex-shrink-0">{label}</div>
+      <div className="font-mono text-foreground break-all">{value}</div>
+    </div>
+  );
+
+  const Status = ({ k, label }: { k: keyof typeof results; label: string }) => {
+    const r = results[k];
+    return (
+      <div className="flex items-center gap-2 text-[10px]">
+        <button
+          onClick={() => run(k as any)}
+          className="px-2.5 py-1 rounded font-bold cursor-pointer"
+          style={{ background: "#8b5cf618", border: "1px solid #8b5cf633", color: "#8b5cf6" }}
+        >
+          {label}
+        </button>
+        {r === "loading" && <span className="text-hub-text-dim">…running</span>}
+        {r && r !== "loading" && (
+          <span style={{ color: r.ok ? "#10b981" : "#ef4444" }} className="font-mono">
+            {r.ok ? "✓" : "✗"} {r.status} — {r.message}
+          </span>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div className="mt-6 bg-hub-surface border border-hub-border rounded-lg p-4">
+      <div className="text-[9px] text-hub-text-dim tracking-[0.12em] uppercase mb-4">External Integration — Skill Hub API</div>
+
+      <Row label="Base URL" value="https://my-agenthub.lovable.app" />
+      <Row label="Endpoint" value="POST /api/public/skillhub" />
+      <Row label="Auth" value="HMAC-SHA256 of `${timestamp}.${rawBody}` using SKILL_HUB_SHARED_SECRET" />
+      <Row label="Headers" value="X-Hub-Signature, X-Hub-Timestamp, Content-Type: application/json" />
+      <Row label="Actions" value="ping · list-skills · invoke" />
+      <Row label="Replay window" value="±300s (5 min)" />
+
+      <div className="mt-4">
+        <div className="text-[9px] text-hub-text-dim tracking-[0.12em] uppercase mb-2">Curl — ping</div>
+        <pre className="bg-background border border-border rounded p-3 text-[10px] font-mono text-foreground overflow-x-auto whitespace-pre">{curlExample}</pre>
+        <div className="text-[9px] text-hub-text-dim mt-1">Secret is referenced via env var — never embedded in client code.</div>
+      </div>
+
+      <div className="mt-4 flex flex-col gap-2">
+        <div className="text-[9px] text-hub-text-dim tracking-[0.12em] uppercase mb-1">Server-side tests</div>
+        <Status k="valid" label="Test ping" />
+        <Status k="bad-signature" label="Test invalid HMAC" />
+        <Status k="stale-timestamp" label="Test stale timestamp" />
+        <Status k="missing-secret-check" label="Check secret present" />
       </div>
     </div>
   );
