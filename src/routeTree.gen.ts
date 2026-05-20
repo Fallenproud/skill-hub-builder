@@ -21,6 +21,7 @@ import { Route as ConfigRouteImport } from './routes/config'
 import { Route as AllowlistRouteImport } from './routes/allowlist'
 import { Route as AgentRouteImport } from './routes/agent'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiPublicSkillhubRouteImport } from './routes/api/public/skillhub'
 import { Route as ApiPublicExtensionSyncRouteImport } from './routes/api/public/extension-sync'
 
 const TrackerRoute = TrackerRouteImport.update({
@@ -83,6 +84,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicSkillhubRoute = ApiPublicSkillhubRouteImport.update({
+  id: '/api/public/skillhub',
+  path: '/api/public/skillhub',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicExtensionSyncRoute = ApiPublicExtensionSyncRouteImport.update({
   id: '/api/public/extension-sync',
   path: '/api/public/extension-sync',
@@ -103,6 +109,7 @@ export interface FileRoutesByFullPath {
   '/skills': typeof SkillsRoute
   '/tracker': typeof TrackerRoute
   '/api/public/extension-sync': typeof ApiPublicExtensionSyncRoute
+  '/api/public/skillhub': typeof ApiPublicSkillhubRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -118,6 +125,7 @@ export interface FileRoutesByTo {
   '/skills': typeof SkillsRoute
   '/tracker': typeof TrackerRoute
   '/api/public/extension-sync': typeof ApiPublicExtensionSyncRoute
+  '/api/public/skillhub': typeof ApiPublicSkillhubRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -134,6 +142,7 @@ export interface FileRoutesById {
   '/skills': typeof SkillsRoute
   '/tracker': typeof TrackerRoute
   '/api/public/extension-sync': typeof ApiPublicExtensionSyncRoute
+  '/api/public/skillhub': typeof ApiPublicSkillhubRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -151,6 +160,7 @@ export interface FileRouteTypes {
     | '/skills'
     | '/tracker'
     | '/api/public/extension-sync'
+    | '/api/public/skillhub'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -166,6 +176,7 @@ export interface FileRouteTypes {
     | '/skills'
     | '/tracker'
     | '/api/public/extension-sync'
+    | '/api/public/skillhub'
   id:
     | '__root__'
     | '/'
@@ -181,6 +192,7 @@ export interface FileRouteTypes {
     | '/skills'
     | '/tracker'
     | '/api/public/extension-sync'
+    | '/api/public/skillhub'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -197,6 +209,7 @@ export interface RootRouteChildren {
   SkillsRoute: typeof SkillsRoute
   TrackerRoute: typeof TrackerRoute
   ApiPublicExtensionSyncRoute: typeof ApiPublicExtensionSyncRoute
+  ApiPublicSkillhubRoute: typeof ApiPublicSkillhubRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -285,6 +298,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/skillhub': {
+      id: '/api/public/skillhub'
+      path: '/api/public/skillhub'
+      fullPath: '/api/public/skillhub'
+      preLoaderRoute: typeof ApiPublicSkillhubRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/extension-sync': {
       id: '/api/public/extension-sync'
       path: '/api/public/extension-sync'
@@ -309,6 +329,7 @@ const rootRouteChildren: RootRouteChildren = {
   SkillsRoute: SkillsRoute,
   TrackerRoute: TrackerRoute,
   ApiPublicExtensionSyncRoute: ApiPublicExtensionSyncRoute,
+  ApiPublicSkillhubRoute: ApiPublicSkillhubRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
