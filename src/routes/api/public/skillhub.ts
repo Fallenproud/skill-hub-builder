@@ -70,12 +70,12 @@ export async function handleSkillHub(
     const skills = (data ?? []).map((s: Record<string, unknown>) => ({
       id: s.id,
       name: s.name,
-      description: s.description ?? null,
+      description: s.description ?? "",
       version: "1",
       category: (s.category_id as string) ?? "general",
       tags: [],
-      input_schema: s.inputs ?? [],
-      output_schema: s.outputs ?? [],
+      input_schema: s.inputs ?? {},
+      output_schema: s.outputs ?? null,
       enabled: true,
     }));
     return { status: 200, body: { ok: true, skills } };
