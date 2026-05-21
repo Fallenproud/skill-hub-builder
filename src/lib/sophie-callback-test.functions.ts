@@ -6,7 +6,7 @@ export type SophieCallbackResult = {
   callback_url: string;
   request_status: number | null;
   response_body: string;
-  parsed_body: Record<string, unknown> | null;
+  parsed_body: Record<string, string | number | boolean | null | object> | null;
   result: string;
   ok: boolean;
   expected: string;
@@ -85,7 +85,7 @@ async function run(mode: Mode): Promise<SophieCallbackResult> {
     };
   }
 
-  let parsed: Record<string, unknown> | null = null;
+  let parsed: Record<string, string | number | boolean | null | object> | null = null;
   try { parsed = JSON.parse(text); } catch {}
 
   const action: SophieCallbackResult["action"] =
