@@ -9,7 +9,7 @@ export type TestResult = {
   action: "ping" | "invalid-hmac" | "stale" | "secret-check";
   button_request_status: number;
   skillhub_response_status: number | null;
-  skillhub_response_body: Record<string, unknown>;
+  skillhub_response_body: Record<string, string | number | boolean | null>;
   resolved_url_used: string;
   used_origin_source: "request-origin" | "SKILL_HUB_BASE_URL" | "fallback";
   result: string;
