@@ -62,9 +62,23 @@ export async function handleSkillHub(
   if (action === "ping") return { status: 200, body: { ok: true, pong: true, at: Date.now() } };
 
   if (action === "list-skills") {
-    const { data, error } = await supabaseAdmin.from("skills").select("id,name,category,description").limit(500);
+    const { data, error } = await supabaseAdmin
+      .from("skills")
+      .select("id,name,description,category_id,inputs,outputs")
+      .limit(500);
     if (error) return { status: 500, body: { ok: false, error: error.message } };
-    return { status: 200, body: { ok: true, skills: data ?? [] } };
+    const skills = (data ?? []).map((s: Record<string, unknown>) => ({
+      id: s.id,
+      name: s.name,
+      description: s.description ?? null,
+      version: "1",
+      category: (s.category_id as string) ?? "general",
+      tags: [],
+      input_schema: s.inputs ?? [],
+      output_schema: s.outputs ?? [],
+      enabled: true,
+    }));
+    return { status: 200, body: { ok: true, skills } };
   }
 
   if (action === "invoke") {
