@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState, useCallback } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { testSkillHubPing } from "@/lib/skillhub-test.functions";
+import { testSkillHubPing, type TestResult } from "@/lib/skillhub-test.functions";
 
 export const Route = createFileRoute("/config")({
   component: AgentConfigPage,
@@ -181,7 +181,7 @@ function AgentConfigPage() {
 
 function IntegrationPanel() {
   const ping = useServerFn(testSkillHubPing);
-  const [results, setResults] = useState<Record<string, { ok: boolean; status: number; message: string } | "loading">>({});
+  const [results, setResults] = useState<Record<string, TestResult | "loading">>({});
 
   const run = async (mode: "valid" | "bad-signature" | "stale-timestamp" | "missing-secret-check") => {
     setResults((r) => ({ ...r, [mode]: "loading" }));
@@ -208,19 +208,31 @@ curl -X POST https://my-agenthub.lovable.app/api/public/skillhub \\
   const Status = ({ k, label }: { k: keyof typeof results; label: string }) => {
     const r = results[k];
     return (
-      <div className="flex items-center gap-2 text-[10px]">
-        <button
-          onClick={() => run(k as any)}
-          className="px-2.5 py-1 rounded font-bold cursor-pointer"
-          style={{ background: "#8b5cf618", border: "1px solid #8b5cf633", color: "#8b5cf6" }}
-        >
-          {label}
-        </button>
-        {r === "loading" && <span className="text-hub-text-dim">…running</span>}
+      <div className="flex flex-col gap-1 text-[10px]">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => run(k as any)}
+            className="px-2.5 py-1 rounded font-bold cursor-pointer"
+            style={{ background: "#8b5cf618", border: "1px solid #8b5cf633", color: "#8b5cf6" }}
+          >
+            {label}
+          </button>
+          {r === "loading" && <span className="text-hub-text-dim">…running</span>}
+          {r && r !== "loading" && (
+            <span style={{ color: r.ok ? "#10b981" : "#ef4444" }} className="font-mono">
+              {r.ok ? "✓" : "✗"} {r.result}
+            </span>
+          )}
+        </div>
         {r && r !== "loading" && (
-          <span style={{ color: r.ok ? "#10b981" : "#ef4444" }} className="font-mono">
-            {r.ok ? "✓" : "✗"} {r.status} — {r.message}
-          </span>
+          <div className="ml-2 pl-3 border-l border-hub-border font-mono text-[10px] text-hub-text-dim space-y-0.5">
+            <div>action: <span className="text-foreground">{r.action}</span></div>
+            <div>button_request_status: <span className="text-foreground">{r.button_request_status}</span></div>
+            <div>skillhub_response_status: <span className="text-foreground">{r.skillhub_response_status ?? "n/a"}</span></div>
+            <div>used_origin_source: <span className="text-foreground">{r.used_origin_source}</span></div>
+            <div className="break-all">resolved_url_used: <span className="text-foreground">{r.resolved_url_used}</span></div>
+            <div className="break-all">skillhub_response_body: <span className="text-foreground">{JSON.stringify(r.skillhub_response_body)}</span></div>
+          </div>
         )}
       </div>
     );
