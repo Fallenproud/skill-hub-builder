@@ -1,24 +1,70 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { createHmac } from "crypto";
+import { handleSkillHub } from "@/routes/api/public/skillhub";
 
 type TestMode = "valid" | "bad-signature" | "stale-timestamp" | "missing-secret-check";
 
-async function callHub(mode: TestMode) {
+export type TestResult = {
+  action: "ping" | "invalid-hmac" | "stale" | "secret-check";
+  button_request_status: number;
+  skillhub_response_status: number | null;
+  skillhub_response_body: unknown;
+  resolved_url_used: string;
+  used_origin_source: "request-origin" | "SKILL_HUB_BASE_URL" | "fallback";
+  result: string;
+  ok: boolean;
+};
+
+async function run(mode: TestMode): Promise<TestResult> {
   const secret = process.env.SKILL_HUB_SHARED_SECRET;
-  // Derive origin from the incoming request — Cloudflare Workers cannot
-  // fetch their own public hostname (causes 530 / error 1016 Origin DNS).
-  let base = process.env.SKILL_HUB_BASE_URL || "";
+
+  // Resolve URL for display/debug (we no longer self-fetch — Workers can't
+  // reliably reach their own hostname; calling handler logic directly).
+  let resolved_url_used = "";
+  let used_origin_source: TestResult["used_origin_source"] = "fallback";
   try {
     const req = getRequest();
-    if (req) base = new URL(req.url).origin;
+    if (req) {
+      resolved_url_used = `${new URL(req.url).origin}/api/public/skillhub`;
+      used_origin_source = "request-origin";
+    }
   } catch {}
-  if (!base) base = "https://my-agenthub.lovable.app";
+  if (!resolved_url_used && process.env.SKILL_HUB_BASE_URL) {
+    resolved_url_used = `${process.env.SKILL_HUB_BASE_URL}/api/public/skillhub`;
+    used_origin_source = "SKILL_HUB_BASE_URL";
+  }
+  if (!resolved_url_used) {
+    resolved_url_used = "https://my-agenthub.lovable.app/api/public/skillhub";
+    used_origin_source = "fallback";
+  }
+  console.log(`[skillhub-test] mode=${mode} url=${resolved_url_used} source=${used_origin_source}`);
 
   if (mode === "missing-secret-check") {
-    return { ok: !!secret, status: secret ? 200 : 500, message: secret ? "secret present" : "SKILL_HUB_SHARED_SECRET missing" };
+    return {
+      action: "secret-check",
+      button_request_status: 200,
+      skillhub_response_status: null,
+      skillhub_response_body: { secret_present: !!secret },
+      resolved_url_used,
+      used_origin_source,
+      result: secret ? "secret present true" : "secret missing",
+      ok: !!secret,
+    };
   }
-  if (!secret) return { ok: false, status: 0, message: "SKILL_HUB_SHARED_SECRET missing" };
+
+  if (!secret) {
+    return {
+      action: mode === "valid" ? "ping" : mode === "bad-signature" ? "invalid-hmac" : "stale",
+      button_request_status: 200,
+      skillhub_response_status: 500,
+      skillhub_response_body: { error: "SKILL_HUB_SHARED_SECRET missing" },
+      resolved_url_used,
+      used_origin_source,
+      result: "server misconfigured",
+      ok: false,
+    };
+  }
 
   const body = JSON.stringify({ action: "ping" });
   let ts = Math.floor(Date.now() / 1000);
@@ -26,31 +72,30 @@ async function callHub(mode: TestMode) {
   let sig = createHmac("sha256", secret).update(`${ts}.${body}`).digest("hex");
   if (mode === "bad-signature") sig = "0".repeat(sig.length);
 
-  try {
-    const res = await fetch(`${base}/api/public/skillhub`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Hub-Signature": sig,
-        "X-Hub-Timestamp": String(ts),
-      },
-      body,
-    });
-    const text = await res.text();
-    let parsed: unknown = text;
-    try { parsed = JSON.parse(text); } catch {}
-    const msg =
-      typeof parsed === "object" && parsed && "error" in (parsed as any)
-        ? String((parsed as any).error)
-        : typeof parsed === "object" && parsed && "pong" in (parsed as any)
-        ? "pong"
-        : text.slice(0, 120);
-    return { ok: res.ok, status: res.status, message: msg };
-  } catch (e) {
-    return { ok: false, status: 0, message: e instanceof Error ? e.message : "network error" };
-  }
+  const inner = await handleSkillHub(body, sig, String(ts));
+
+  const action: TestResult["action"] =
+    mode === "valid" ? "ping" : mode === "bad-signature" ? "invalid-hmac" : "stale";
+
+  const result =
+    typeof inner.body === "object" && inner.body && "pong" in (inner.body as any)
+      ? "ok"
+      : typeof inner.body === "object" && inner.body && "error" in (inner.body as any)
+      ? String((inner.body as any).error)
+      : String(inner.status);
+
+  return {
+    action,
+    button_request_status: 200,
+    skillhub_response_status: inner.status,
+    skillhub_response_body: inner.body,
+    resolved_url_used,
+    used_origin_source,
+    result,
+    ok: inner.status >= 200 && inner.status < 300,
+  };
 }
 
 export const testSkillHubPing = createServerFn({ method: "POST" })
   .inputValidator((input: { mode?: TestMode }) => ({ mode: input?.mode ?? "valid" }))
-  .handler(async ({ data }) => callHub(data.mode));
+  .handler(async ({ data }) => run(data.mode));
