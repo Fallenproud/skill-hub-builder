@@ -1,11 +1,19 @@
 import { createServerFn } from "@tanstack/react-start";
+import { getRequest } from "@tanstack/react-start/server";
 import { createHmac } from "crypto";
 
 type TestMode = "valid" | "bad-signature" | "stale-timestamp" | "missing-secret-check";
 
 async function callHub(mode: TestMode) {
   const secret = process.env.SKILL_HUB_SHARED_SECRET;
-  const base = process.env.SKILL_HUB_BASE_URL || "https://my-agenthub.lovable.app";
+  // Derive origin from the incoming request — Cloudflare Workers cannot
+  // fetch their own public hostname (causes 530 / error 1016 Origin DNS).
+  let base = process.env.SKILL_HUB_BASE_URL || "";
+  try {
+    const req = getRequest();
+    if (req) base = new URL(req.url).origin;
+  } catch {}
+  if (!base) base = "https://my-agenthub.lovable.app";
 
   if (mode === "missing-secret-check") {
     return { ok: !!secret, status: secret ? 200 : 500, message: secret ? "secret present" : "SKILL_HUB_SHARED_SECRET missing" };
