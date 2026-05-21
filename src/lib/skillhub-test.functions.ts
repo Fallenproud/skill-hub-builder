@@ -73,22 +73,23 @@ async function run(mode: TestMode): Promise<TestResult> {
   if (mode === "bad-signature") sig = "0".repeat(sig.length);
 
   const inner = await handleSkillHub(body, sig, String(ts));
+  const innerBody = inner.body as Record<string, string | number | boolean | null>;
 
   const action: TestResult["action"] =
     mode === "valid" ? "ping" : mode === "bad-signature" ? "invalid-hmac" : "stale";
 
   const result =
-    typeof inner.body === "object" && inner.body && "pong" in (inner.body as any)
+    "pong" in innerBody
       ? "ok"
-      : typeof inner.body === "object" && inner.body && "error" in (inner.body as any)
-      ? String((inner.body as any).error)
+      : "error" in innerBody
+      ? String(innerBody.error)
       : String(inner.status);
 
   return {
     action,
     button_request_status: 200,
     skillhub_response_status: inner.status,
-    skillhub_response_body: inner.body,
+    skillhub_response_body: innerBody,
     resolved_url_used,
     used_origin_source,
     result,
