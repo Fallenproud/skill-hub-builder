@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState, useCallback } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { testSkillHubPing, type TestResult } from "@/lib/skillhub-test.functions";
+import { testSophieCallback, type SophieCallbackResult } from "@/lib/sophie-callback-test.functions";
 
 export const Route = createFileRoute("/config")({
   component: AgentConfigPage,
@@ -175,6 +176,7 @@ function AgentConfigPage() {
       </div>
 
       <IntegrationPanel />
+      <SophieCallbackPanel />
     </div>
   );
 }
@@ -261,6 +263,91 @@ curl -X POST https://my-agenthub.lovable.app/api/public/skillhub \\
         <Status k="bad-signature" label="Test invalid HMAC" />
         <Status k="stale-timestamp" label="Test stale timestamp" />
         <Status k="missing-secret-check" label="Check secret present" />
+      </div>
+    </div>
+  );
+}
+
+function SophieCallbackPanel() {
+  const run = useServerFn(testSophieCallback);
+  const [results, setResults] = useState<Record<string, SophieCallbackResult | "loading">>({});
+
+  const trigger = async (mode: "valid" | "bad-signature" | "config-check") => {
+    setResults((r) => ({ ...r, [mode]: "loading" }));
+    const res = await run({ data: { mode } });
+    setResults((r) => ({ ...r, [mode]: res }));
+  };
+
+  const Row = ({ label, value }: { label: string; value: string }) => (
+    <div className="flex gap-3 text-[11px] py-1">
+      <div className="text-hub-text-dim w-28 flex-shrink-0">{label}</div>
+      <div className="font-mono text-foreground break-all">{value}</div>
+    </div>
+  );
+
+  const Status = ({ k, label }: { k: "valid" | "bad-signature" | "config-check"; label: string }) => {
+    const r = results[k];
+    return (
+      <div className="flex flex-col gap-1 text-[10px]">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => trigger(k)}
+            className="px-2.5 py-1 rounded font-bold cursor-pointer"
+            style={{ background: "#06b6d418", border: "1px solid #06b6d433", color: "#06b6d4" }}
+          >
+            {label}
+          </button>
+          {r === "loading" && <span className="text-hub-text-dim">…running</span>}
+          {r && r !== "loading" && (
+            <span style={{ color: r.ok ? "#10b981" : "#ef4444" }} className="font-mono">
+              {r.ok ? "✓" : "✗"} {r.result}
+            </span>
+          )}
+        </div>
+        {r && r !== "loading" && (
+          <div className="ml-2 pl-3 border-l border-hub-border font-mono text-[10px] text-hub-text-dim space-y-0.5">
+            <div>action: <span className="text-foreground">{r.action}</span></div>
+            <div>expected: <span className="text-foreground">{r.expected}</span></div>
+            <div>request_status: <span className="text-foreground">{r.request_status ?? "n/a"}</span></div>
+            <div className="break-all">callback_url: <span className="text-foreground">{r.callback_url}</span></div>
+            <div className="break-all">response_body: <span className="text-foreground">{r.response_body || JSON.stringify(r.parsed_body)}</span></div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const payloadExample = `{
+  "request_id": "abc-123",
+  "status": "success",
+  "output": { ... },
+  "error": null,
+  "duration_ms": 1234
+}`;
+
+  return (
+    <div className="mt-6 bg-hub-surface border border-hub-border rounded-lg p-4">
+      <div className="text-[9px] text-hub-text-dim tracking-[0.12em] uppercase mb-4">Sophie Callback — Async Completion Sink</div>
+
+      <Row label="Callback URL" value="https://sophie-sentinel.lovable.app/api/public/skill-callback" />
+      <Row label="Method" value="POST" />
+      <Row label="Auth" value="HMAC-SHA256 of `${timestamp}.${rawBody}` using SKILL_HUB_SHARED_SECRET" />
+      <Row label="Headers" value="X-Hub-Signature, X-Hub-Timestamp, Content-Type: application/json" />
+      <Row label="Env" value="SOPHIE_CALLBACK_URL (server-only)" />
+
+      <div className="mt-3">
+        <div className="text-[9px] text-hub-text-dim tracking-[0.12em] uppercase mb-2">Payload shape</div>
+        <pre className="bg-background border border-border rounded p-3 text-[10px] font-mono text-foreground overflow-x-auto whitespace-pre">{payloadExample}</pre>
+      </div>
+
+      <div className="mt-4 flex flex-col gap-2">
+        <div className="text-[9px] text-hub-text-dim tracking-[0.12em] uppercase mb-1">Server-side contract tests</div>
+        <Status k="valid" label="Test Sophie callback" />
+        <Status k="bad-signature" label="Test invalid signature" />
+        <Status k="config-check" label="Check callback config" />
+        <div className="text-[9px] text-hub-text-dim mt-1">
+          Valid test uses a fake request_id and expects <span className="font-mono text-foreground">404 unknown request_id</span> — confirms reachability + HMAC + payload parsing.
+        </div>
       </div>
     </div>
   );
