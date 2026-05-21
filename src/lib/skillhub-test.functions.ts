@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { getWebRequest } from "@tanstack/react-start/server";
+import { getRequest } from "@tanstack/react-start/server";
 import { createHmac } from "crypto";
 
 type TestMode = "valid" | "bad-signature" | "stale-timestamp" | "missing-secret-check";
@@ -10,7 +10,7 @@ async function callHub(mode: TestMode) {
   // fetch their own public hostname (causes 530 / error 1016 Origin DNS).
   let base = process.env.SKILL_HUB_BASE_URL || "";
   try {
-    const req = getWebRequest();
+    const req = getRequest();
     if (req) base = new URL(req.url).origin;
   } catch {}
   if (!base) base = "https://my-agenthub.lovable.app";
