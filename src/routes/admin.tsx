@@ -62,7 +62,20 @@ interface SessionRow {
 
 interface AuditRow { id: number; action: string; table_name: string | null; record_id: string | null; details: string | null; created_at: string | null }
 
-type Tab = "overview" | "endpoints" | "keys" | "sessions" | "audit";
+interface InvocationRow {
+  id: string;
+  request_id: string;
+  skill: string;
+  status: string;
+  duration_ms: number | null;
+  callback_url: string | null;
+  callback_attempts: number;
+  callback_delivered: boolean;
+  callback_last_status: number | null;
+  created_at: string | null;
+}
+
+type Tab = "overview" | "endpoints" | "keys" | "sessions" | "invocations" | "audit";
 
 function AdminConsole() {
   const [email, setEmail] = useState<string | null>(null);
@@ -74,6 +87,7 @@ function AdminConsole() {
   const [keys, setKeys] = useState<KeyRow[]>([]);
   const [sessions, setSessions] = useState<SessionRow[]>([]);
   const [audit, setAudit] = useState<AuditRow[]>([]);
+  const [invocations, setInvocations] = useState<InvocationRow[]>([]);
   const [hostFilter, setHostFilter] = useState("");
   const [sourceFilter, setSourceFilter] = useState<string>("");
 
@@ -149,6 +163,15 @@ function AdminConsole() {
     setAudit((data ?? []) as AuditRow[]);
   }, []);
 
+  const loadInvocations = useCallback(async () => {
+    const { data } = await supabase
+      .from("skill_invocations")
+      .select("id,request_id,skill,status,duration_ms,callback_url,callback_attempts,callback_delivered,callback_last_status,created_at")
+      .order("created_at", { ascending: false })
+      .limit(200);
+    setInvocations((data ?? []) as InvocationRow[]);
+  }, []);
+
   useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -167,8 +190,9 @@ function AdminConsole() {
     if (tab === "endpoints") loadEndpoints();
     if (tab === "keys") loadKeys();
     if (tab === "sessions") loadSessions();
+    if (tab === "invocations") loadInvocations();
     if (tab === "audit") loadAudit();
-  }, [tab, isAdmin, loadEndpoints, loadKeys, loadSessions, loadAudit]);
+  }, [tab, isAdmin, loadEndpoints, loadKeys, loadSessions, loadInvocations, loadAudit]);
 
   const deleteEndpoint = async (id: number) => {
     if (!confirm("Delete endpoint row?")) return;
@@ -202,6 +226,7 @@ function AdminConsole() {
     { id: "endpoints", label: "Endpoints" },
     { id: "keys", label: "Captured Keys" },
     { id: "sessions", label: "Sessions" },
+    { id: "invocations", label: "Invocations" },
     { id: "audit", label: "Audit Log" },
   ];
 
