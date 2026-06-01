@@ -327,6 +327,27 @@ function AdminConsole() {
           rows={audit.map(a => [fmtTime(a.created_at), a.action, a.table_name ?? "", a.record_id ?? "", <span key="d" className="truncate inline-block max-w-[520px]">{a.details ?? ""}</span>])}
         />
       )}
+
+      {tab === "invocations" && (
+        <div>
+          <div className="mb-3 text-[10px] text-hub-text-muted">Outbound invokes via <span className="font-mono">/api/public/skillhub</span> with their async Sophie callback delivery status.</div>
+          <DataTable
+            cols={["created_at", "skill", "status", "duration", "cb attempts", "cb last", "delivered", "request_id"]}
+            rows={invocations.map(i => [
+              fmtTime(i.created_at),
+              i.skill,
+              i.status,
+              i.duration_ms != null ? `${i.duration_ms}ms` : "",
+              String(i.callback_attempts),
+              i.callback_last_status != null ? String(i.callback_last_status) : (i.callback_url ? "—" : "n/a"),
+              <span key="d" style={{ color: i.callback_delivered ? "#22c55e" : i.callback_url ? "#ef4444" : "var(--hub-text-dim)" }}>
+                {i.callback_url ? (i.callback_delivered ? "yes" : "no") : "no url"}
+              </span>,
+              <span key="r" className="font-mono text-[10px] truncate inline-block max-w-[200px]">{i.request_id}</span>,
+            ])}
+          />
+        </div>
+      )}
     </div>
   );
 }
