@@ -129,7 +129,7 @@ export async function handleSkillHub(
     await supabaseAdmin.from("skill_invocations").insert({
       request_id: requestId,
       skill: payload.skill,
-      input: (payload.input ?? null) as object | null,
+      input: (payload.input ?? null) as never,
       status: "running",
       callback_url: callbackUrl,
     });
@@ -178,7 +178,7 @@ export async function handleSkillHub(
       .from("skill_invocations")
       .update({
         status: "success",
-        output: execOutput as object,
+        output: execOutput as never,
         duration_ms: durationMs,
         completed_at: new Date().toISOString(),
         callback_attempts: cbAttempts,
