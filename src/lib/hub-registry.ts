@@ -82,6 +82,12 @@ export const BUILTIN_PAGES: HubPage[] = [
     description: 'Admin-only host patterns that the extension is allowed to sync',
     built_in: true, enabled: true, sort_order: 10,
   },
+  {
+    id: 'admin', label: 'Admin Console', path: '/admin', icon: '⚛',
+    color: '#fbbf24', category: 'system',
+    description: 'Admin-only console: endpoints, sessions, captured keys, audit log',
+    built_in: true, enabled: true, sort_order: 11,
+  },
 ];
 
 export const CATEGORY_CONFIG: Record<string, { label: string; color: string }> = {
