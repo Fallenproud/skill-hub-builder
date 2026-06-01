@@ -471,6 +471,63 @@ export type Database = {
         }
         Relationships: []
       }
+      skill_invocations: {
+        Row: {
+          callback_attempts: number
+          callback_delivered: boolean
+          callback_last_at: string | null
+          callback_last_response: string | null
+          callback_last_status: number | null
+          callback_url: string | null
+          completed_at: string | null
+          created_at: string
+          duration_ms: number | null
+          error: string | null
+          id: string
+          input: Json | null
+          output: Json | null
+          request_id: string
+          skill: string
+          status: string
+        }
+        Insert: {
+          callback_attempts?: number
+          callback_delivered?: boolean
+          callback_last_at?: string | null
+          callback_last_response?: string | null
+          callback_last_status?: number | null
+          callback_url?: string | null
+          completed_at?: string | null
+          created_at?: string
+          duration_ms?: number | null
+          error?: string | null
+          id?: string
+          input?: Json | null
+          output?: Json | null
+          request_id: string
+          skill: string
+          status?: string
+        }
+        Update: {
+          callback_attempts?: number
+          callback_delivered?: boolean
+          callback_last_at?: string | null
+          callback_last_response?: string | null
+          callback_last_status?: number | null
+          callback_url?: string | null
+          completed_at?: string | null
+          created_at?: string
+          duration_ms?: number | null
+          error?: string | null
+          id?: string
+          input?: Json | null
+          output?: Json | null
+          request_id?: string
+          skill?: string
+          status?: string
+        }
+        Relationships: []
+      }
       skills: {
         Row: {
           block_conditions: Json | null
