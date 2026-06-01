@@ -85,6 +85,42 @@ export async function handleSkillHub(
     if (!payload.skill || typeof payload.skill !== "string") {
       return { status: 400, body: { ok: false, error: "skill required" } };
     }
+    // Synchronous meta-skill: return the categorized registry manifest in-band.
+    if (payload.skill === "Skill-Registry-Manifest" || payload.skill === "sys-006") {
+      const [{ data: cats }, { data: skillRows }] = await Promise.all([
+        supabaseAdmin.from("categories").select("id,name,icon,color,sort_order").order("sort_order"),
+        supabaseAdmin.from("skills").select("id,name,description,category_id,priority,cost_class,latency_class").limit(500),
+      ]);
+      const grouped = (cats ?? []).map((c) => ({
+        id: c.id as string,
+        name: c.name as string,
+        icon: c.icon as string,
+        color: c.color as string,
+        skills: (skillRows ?? [])
+          .filter((s) => s.category_id === c.id)
+          .map((s) => ({
+            id: s.id,
+            name: s.name,
+            description: s.description ?? "",
+            priority: s.priority ?? 2,
+            cost_class: s.cost_class ?? "medium",
+            latency_class: s.latency_class ?? "normal",
+          })),
+      }));
+      return {
+        status: 200,
+        body: {
+          ok: true,
+          skill: "Skill-Registry-Manifest",
+          result: {
+            version: "v6",
+            total: (skillRows ?? []).length,
+            generated_at: new Date().toISOString(),
+            categories: grouped,
+          },
+        },
+      };
+    }
     return { status: 202, body: { ok: true, accepted: true, skill: payload.skill, queued_at: Date.now() } };
   }
 
