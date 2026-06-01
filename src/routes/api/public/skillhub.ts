@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { createHmac, timingSafeEqual } from "crypto";
+import { getAdapter, listExecutableSkills } from "@/lib/skill-adapters";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -113,13 +114,59 @@ export async function handleSkillHub(
           ok: true,
           skill: "Skill-Registry-Manifest",
           result: {
-            version: "v6",
+            version: "v7.0",
             total: (skillRows ?? []).length,
+            executable: listExecutableSkills(),
             generated_at: new Date().toISOString(),
             categories: grouped,
           },
         },
       };
+    }
+    // v7.0 — synchronous dispatch via executable adapter registry.
+    const adapter = getAdapter(payload.skill);
+    if (adapter) {
+      const requestId = `inv-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      const startedAt = Date.now();
+      await supabaseAdmin.from("skill_invocations").insert({
+        request_id: requestId,
+        skill: adapter.id,
+        input: (payload.input ?? null) as never,
+        status: "running",
+        callback_url: null,
+      });
+      try {
+        const result = await adapter.execute(
+          (payload.input as Record<string, unknown>) ?? {},
+          { requestId },
+        );
+        const durationMs = Date.now() - startedAt;
+        await supabaseAdmin
+          .from("skill_invocations")
+          .update({
+            status: "success",
+            output: result as never,
+            duration_ms: durationMs,
+            completed_at: new Date().toISOString(),
+          })
+          .eq("request_id", requestId);
+        return {
+          status: 200,
+          body: { ok: true, skill: adapter.id, request_id: requestId, duration_ms: durationMs, result },
+        };
+      } catch (e) {
+        const msg = (e as Error)?.message ?? String(e);
+        await supabaseAdmin
+          .from("skill_invocations")
+          .update({
+            status: "error",
+            error: msg,
+            duration_ms: Date.now() - startedAt,
+            completed_at: new Date().toISOString(),
+          })
+          .eq("request_id", requestId);
+        return { status: 500, body: { ok: false, skill: adapter.id, request_id: requestId, error: msg } };
+      }
     }
     // Async runner: persist invocation, simulate work, dispatch signed callback with retry.
     const requestId = `inv-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
