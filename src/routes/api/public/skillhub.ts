@@ -121,7 +121,87 @@ export async function handleSkillHub(
         },
       };
     }
-    return { status: 202, body: { ok: true, accepted: true, skill: payload.skill, queued_at: Date.now() } };
+    // Async runner: persist invocation, simulate work, dispatch signed callback with retry.
+    const requestId = `inv-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const callbackUrl = process.env.SOPHIE_CALLBACK_URL || null;
+    const startedAt = Date.now();
+
+    await supabaseAdmin.from("skill_invocations").insert({
+      request_id: requestId,
+      skill: payload.skill,
+      input: (payload.input ?? null) as never,
+      status: "running",
+      callback_url: callbackUrl,
+    });
+
+    // Stub execution result — real adapters will plug in here.
+    const execOutput = { accepted: true, skill: payload.skill, note: "stub-runner: no executor wired" };
+    const durationMs = Date.now() - startedAt;
+
+    let cbDelivered = false;
+    let cbAttempts = 0;
+    let cbLastStatus: number | null = null;
+    let cbLastResponse = "";
+
+    if (callbackUrl) {
+      const cbBody = JSON.stringify({
+        request_id: requestId,
+        status: "success",
+        output: execOutput,
+        duration_ms: durationMs,
+      });
+      const backoff = [0, 400, 1200]; // ms before attempts 1,2,3
+      for (let i = 0; i < backoff.length; i++) {
+        if (backoff[i] > 0) await new Promise((r) => setTimeout(r, backoff[i]));
+        cbAttempts++;
+        const ts = Math.floor(Date.now() / 1000);
+        const sig = createHmac("sha256", secret).update(`${ts}.${cbBody}`).digest("hex");
+        try {
+          const res = await fetch(callbackUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "X-Hub-Signature": sig, "X-Hub-Timestamp": String(ts) },
+            body: cbBody,
+          });
+          cbLastStatus = res.status;
+          cbLastResponse = (await res.text()).slice(0, 500);
+          if (res.status >= 200 && res.status < 300) { cbDelivered = true; break; }
+          if (res.status === 404) { cbDelivered = false; break; } // unknown request_id — won't recover
+          if (res.status < 500 && res.status !== 408 && res.status !== 429) break; // 4xx non-retryable
+        } catch (e) {
+          cbLastStatus = null;
+          cbLastResponse = String((e as Error)?.message ?? e).slice(0, 500);
+        }
+      }
+    }
+
+    await supabaseAdmin
+      .from("skill_invocations")
+      .update({
+        status: "success",
+        output: execOutput as never,
+        duration_ms: durationMs,
+        completed_at: new Date().toISOString(),
+        callback_attempts: cbAttempts,
+        callback_last_status: cbLastStatus,
+        callback_last_response: cbLastResponse,
+        callback_last_at: cbAttempts > 0 ? new Date().toISOString() : null,
+        callback_delivered: cbDelivered,
+      })
+      .eq("request_id", requestId);
+
+    return {
+      status: 202,
+      body: {
+        ok: true,
+        accepted: true,
+        skill: payload.skill,
+        request_id: requestId,
+        queued_at: startedAt,
+        callback: callbackUrl
+          ? { dispatched: true, delivered: cbDelivered, attempts: cbAttempts, last_status: cbLastStatus }
+          : { dispatched: false, reason: "SOPHIE_CALLBACK_URL not configured" },
+      },
+    };
   }
 
   return { status: 400, body: { ok: false, error: `unknown action: ${action}` } };
