@@ -34,6 +34,9 @@ async function verifyAuth(req: Request): Promise<Response | null> {
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  const authError = await verifyAuth(req);
+  if (authError) return authError;
+
   try {
     const { messages, context } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
