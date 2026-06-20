@@ -80,9 +80,10 @@ function AgentPage() {
       (configRes.data || []).forEach((c: any) => { config[c.key] = c.value; });
 
       // 2) ROUTE
+      const routeAuthHeaders = await functionsAuthHeader();
       const routeResp = await fetch(functionsUrl("agent-route"), {
         method: "POST",
-        headers: { "Content-Type": "application/json", ...functionsAuthHeader() },
+        headers: { "Content-Type": "application/json", ...routeAuthHeaders },
         body: JSON.stringify({ task, skills: skillsRes.data || [], memories: memoriesRes.data || [], config }),
       });
 
@@ -168,9 +169,10 @@ function AgentPage() {
         setSteps(prev => prev.map((s, idx) => idx === i ? { ...s, status: "running" } : s));
 
         try {
+          const execAuthHeaders = await functionsAuthHeader();
           const execResp = await fetch(functionsUrl("skill-execute"), {
             method: "POST",
-            headers: { "Content-Type": "application/json", ...functionsAuthHeader() },
+            headers: { "Content-Type": "application/json", ...execAuthHeaders },
             body: JSON.stringify({
               skill_name: step.skill,
               task,

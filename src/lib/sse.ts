@@ -40,10 +40,16 @@ export function functionsUrl(name: string): string {
   return `${supabaseUrl}/functions/v1/${name}`;
 }
 
-export function functionsAuthHeader(): Record<string, string> {
+export async function functionsAuthHeader(): Promise<Record<string, string>> {
   const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  const { supabase } = await import("@/integrations/supabase/client");
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+  if (!token) {
+    throw new Error("You must be signed in to invoke this endpoint.");
+  }
   return {
-    Authorization: `Bearer ${key}`,
+    Authorization: `Bearer ${token}`,
     apikey: key,
   };
 }

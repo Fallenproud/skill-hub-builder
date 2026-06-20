@@ -84,9 +84,10 @@ export default function ChatPanel() {
       await supabase.from("chat_messages").insert({ session_id: sId, role: "user", content: text });
 
       const ctx = await loadContext();
+      const authHeaders = await functionsAuthHeader();
       const resp = await fetch(functionsUrl("agent-chat"), {
         method: "POST",
-        headers: { "Content-Type": "application/json", ...functionsAuthHeader() },
+        headers: { "Content-Type": "application/json", ...authHeaders },
         body: JSON.stringify({
           messages: next.map(m => ({ role: m.role, content: m.content })),
           context: ctx,

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState, useRef } from "react";
+import { functionsAuthHeader, functionsUrl } from "@/lib/sse";
 
 export const Route = createFileRoute("/playground")({
   component: PlaygroundPage,
@@ -37,15 +38,10 @@ function PlaygroundPage() {
     outputRef.current = "";
 
     try {
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-
-      const resp = await fetch(`${supabaseUrl}/functions/v1/skill-execute`, {
+      const authHeaders = await functionsAuthHeader();
+      const resp = await fetch(functionsUrl("skill-execute"), {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${supabaseKey}`,
-        },
+        headers: { "Content-Type": "application/json", ...authHeaders },
         body: JSON.stringify({ skill_name: selectedSkill, task }),
       });
 
