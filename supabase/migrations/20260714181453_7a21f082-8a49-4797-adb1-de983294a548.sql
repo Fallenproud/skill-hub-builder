@@ -1,0 +1,1 @@
+GRANT EXECUTE ON FUNCTION public.run_rls_regression() TO PUBLIC;
